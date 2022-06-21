@@ -1,0 +1,61 @@
+#!/usr/bin/python3
+
+import sys
+import os
+
+def interpretcmd(fullcmd):
+  def spiterror(e):
+    print(e)
+  home = "~"
+  cmd = fullcmd.split(None, 1)
+  if(cmd==[] or cmd[0]=='#!/usr/bin/moexe'):
+    pass
+  elif(cmd[0]=='help'):
+    print(cmdlist)
+  elif(cmd[0]=='cd'):
+    lencmd = len(cmd[0]) + 1
+    changedir(fullcmd[lencmd:len(fullcmd)])
+  elif(cmd[0]=='dir'):
+    print(os.listdir(os.getcwd()))
+  elif(cmd[0]=='echo'):
+    print(cmd[1])
+  elif(cmd[0]=='sleep'):
+    time.sleep(cmd[1])
+  elif(cmd[0]=='run'):
+    os.system(f'{cmd[1]} >> {home}/tmp/old_out')
+    with open(f"{home}/tmp/old_out", "r") as out: # copied code from v0.1.4.2
+      print(out.read())
+  elif(cmd[0]=='clear' or cmd[0]=='cls'):
+    clearscreen()
+  elif(cmd[0]=='curl'):
+    try:
+      interpretcmd(f"run curl -s '{cmd[1]}' -O")
+    except IndexError:
+      spiterror('You must provide a URL for curl to get!')
+  elif(cmd[0]=='exit'):
+    exit()
+  elif(cmd[0]=='script'):
+    if(cmd[1][0:3]=='-py'):
+      exec(open(cmd[1][4:len(cmd[1])]).read())
+    else:
+      filepath = cmd[1]
+      with open(filepath) as fp:
+        for index, line in enumerate(fp):
+         interpretcmd(line.strip())
+  else:
+    try:
+      if(os.path.exists(f'{home}/apps/moexe/{cmd[0]}.moexe')):
+        interpretcmd(f'script {home}/apps/moexe/{cmd[0]}.moexe')
+      elif(os.path.exists(f'{home}/apps/python/{cmd[0]}.py')):
+        interpretcmd(f'script -py {home}/apps/python/{cmd[0]}.py')
+      else:
+          spiterror(f'{cmd[0]} does not exist!')
+    except IndexError:
+      pass
+try:
+      filepath = sys.argv[1]
+      with open(filepath) as fp:
+        for index, line in enumerate(fp):
+                interpretcmd(line.strip())
+except:
+      print('Usage: moexe [FILE].moexe')
