@@ -52,10 +52,11 @@ def interpretcmd(fullcmd):
           spiterror(f'{cmd[0]} does not exist!')
     except IndexError:
       pass
+      
 try:
-      filepath = sys.argv[1]
-      with open(filepath) as fp:
-        for index, line in enumerate(fp):
-                interpretcmd(line.strip())
+  filepath = sys.argv[1]
+  with open(filepath) as fp:
+    for index, line in enumerate(fp):
+      interpretcmd(line.strip())
 except:
-      print('Usage: moexe [FILE].moexe')
+  print('Usage: moexe [FILE].moexe')
